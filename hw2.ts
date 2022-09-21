@@ -351,26 +351,12 @@ Example:
 ** ----------------------------------------------------- */
 
 export function wordle3GetGuess(wordle: Wordle3, guess: 1|2|3): fiveItemRow<[State, letter]> {
-    const retRow: fiveItemRow<[State, letter]> = {
-        entries: []
-    } as unknown as fiveItemRow<[State, letter]>;
     switch (guess) {
-        case 1:
-            for (let i = 0; i < wordle.word.entries.length; i++) {
-                retRow.entries[i] = wordle.guesses[0].entries[i];
-            }; break;
-        case 2:
-            for (let i = 0; i < wordle.word.entries.length; i++) {
-                retRow.entries[i] = wordle.guesses[1].entries[i];
-            }; break;
-        case 3:
-            for (let i = 0; i < wordle.word.entries.length; i++) {
-                retRow.entries[i] = wordle.guesses[2].entries[i];
-            }; break;
+        case 1: case 2: case 3:
+            return wordle.guesses[guess-1];
         default:
-            throw new Error("Guess index out of bounds.");
+            throw Error("Guess index out of bounds.");
     }
-    return retRow;
 }
 
 console.log(wordle3GetGuess(wordle1, 1));
