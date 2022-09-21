@@ -131,6 +131,7 @@ console.log(filterFiveItemRow(row2, (arg) => arg === 'K'));
 console.log(filterFiveItemRow(row3, (arg) => arg !== 'K'));
 console.log(filterFiveItemRow(row4, (arg) => arg === 'S'));
 console.log(filterFiveItemRow(row5, (arg) => arg === 'S' || arg === 'O'));
+
 /* ----------------------------------------------------- **
 ### 1b. Complete the function definition below. (10 pts)
 
@@ -150,18 +151,16 @@ Example:
     dropFiveItemRow(row1, [1, 2]) = [ 'J', 'E', 'R' ]
 
 Example:
-    dropFiveItemRow(row1, [1, 2, 3, 4]) = [ 'R' ]
+    dropFiveItemRow(row1, [1, 2, 3, 4]) = [ 'J' ]
 
 ** ----------------------------------------------------- */
 
 export function dropFiveItemRow<T>(row: fiveItemRow<T>, indices: number[]): T[] {
     const tempArr = [...row.entries];
-    for (let i = 0; i < indices.length; i++) {
-        if (i === 0 || indices[i] < indices[i-1]) {
-            tempArr.slice(indices[i], 1);
-        } else if (indices[i] > indices[i-1]) {
-            tempArr.slice(indices[i]--, 1);
-        }
+    const sortedIndices = indices.sort((a,b) => b - a);
+    console.log(sortedIndices);
+    for (let i = 0; i < sortedIndices.length; i++) {
+        tempArr.splice(sortedIndices[i], 1);
     }
     return tempArr;
 }
@@ -196,9 +195,19 @@ Example:
 ** ----------------------------------------------------- */
 
 export function mapFiveItemRow<S, T>(row: fiveItemRow<S>, f: (arg: S) => T): fiveItemRow<T> {
-    throw Error("TODO");
+    const retRow: fiveItemRow<T> = {
+        entries: []
+        // entries: [f(row.entries[0]), f(row.entries[1]), f(row.entries[2]), f(row.entries[3]), f(row.entries[4])]
+    } as unknown as fiveItemRow<T>;
+    for (let i = 0; i < row.entries.length; i++) {
+        retRow.entries[i] = f(row.entries[i]);
+    }
+    return retRow;
 }
-  
+
+console.log(mapFiveItemRow(row1, (arg) => 0));
+console.log(mapFiveItemRow(row1, (arg) => arg + "!"));
+console.log(mapFiveItemRow(row1, (arg) => arg.length));
 
 /* ==========================================================================  **
 ## 2. Basic Functions on Wordle Board (30 pts)
@@ -342,9 +351,32 @@ Example:
 ** ----------------------------------------------------- */
 
 export function wordle3GetGuess(wordle: Wordle3, guess: 1|2|3): fiveItemRow<[State, letter]> {
-    throw Error("TODO");
+    const retRow: fiveItemRow<[State, letter]> = {
+        entries: []
+    } as unknown as fiveItemRow<[State, letter]>;
+    switch (guess) {
+        case 1:
+            for (let i = 0; i < wordle.word.entries.length; i++) {
+                retRow.entries[i] = wordle.guesses[0].entries[i];
+            }; break;
+        case 2:
+            for (let i = 0; i < wordle.word.entries.length; i++) {
+                retRow.entries[i] = wordle.guesses[1].entries[i];
+            }; break;
+        case 3:
+            for (let i = 0; i < wordle.word.entries.length; i++) {
+                retRow.entries[i] = wordle.guesses[2].entries[i];
+            }; break;
+        default:
+            throw new Error("Guess index out of bounds.");
+    }
+    return retRow;
 }
 
+console.log(wordle3GetGuess(wordle1, 1));
+console.log(wordle3GetGuess(wordle1, 2));
+console.log(wordle3GetGuess(wordle1, 3));
+console.log(wordle3GetGuess(wordle1, 4));
 
 /* ----------------------------------------------------- **
 ### 2b. Complete the function definition below. (15 pts)
