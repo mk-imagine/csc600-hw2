@@ -376,7 +376,7 @@ export function wordle3GetGuess(wordle: Wordle3, guess: 1|2|3): fiveItemRow<[Sta
 console.log(wordle3GetGuess(wordle1, 1));
 console.log(wordle3GetGuess(wordle1, 2));
 console.log(wordle3GetGuess(wordle1, 3));
-console.log(wordle3GetGuess(wordle1, 4));
+// console.log(wordle3GetGuess(wordle1, 4));
 
 /* ----------------------------------------------------- **
 ### 2b. Complete the function definition below. (15 pts)
