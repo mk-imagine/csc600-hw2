@@ -1,3 +1,4 @@
+"use strict";
 /* ==========================================================================  **
 ## HW Instructions
 
@@ -9,7 +10,7 @@ https://docs.google.com/document/d/1FOT8mdx-UjH9cYgUYDRv1EqRMRSAEFINcxhzR6tLTi0/
 
 
 1. Push your solution, contained entirely in hw2.ts, back to the github classroom
-   repository. Please make sure you solution compiles!!! 
+   repository. Please make sure you solution compiles!!!
 
    To run the typescript compiler (`tsc`), make sure you have it installed
    ```
@@ -36,63 +37,32 @@ https://docs.google.com/document/d/1FOT8mdx-UjH9cYgUYDRv1EqRMRSAEFINcxhzR6tLTi0/
    in this assignment.
 
 ** ============================================================================ */
-
-
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.wordle3Update = exports.wordle3UsedLetters = exports.wordle3SetGuess = exports.wordle3GetGuess = exports.wordle2 = exports.wordle1 = exports.mapFiveItemRow = exports.dropFiveItemRow = exports.filterFiveItemRow = exports.RESOURCES_CONSULTED = exports.SIGNATURE = exports.HONOR_PLEDGE = void 0;
 /* ==========================================================================  **
 ## Honor Pledge
 ** ============================================================================ */
-
-export const HONOR_PLEDGE = "I pledge on my honor that this assignment is my own work.";
-export const SIGNATURE = "Mark Kim"; // TODO: FILL ME IN
-
+exports.HONOR_PLEDGE = "I pledge on my honor that this assignment is my own work.";
+exports.SIGNATURE = "Mark Kim"; // TODO: FILL ME IN
 // If you used any resources, please list them here
-export const RESOURCES_CONSULTED = [
+exports.RESOURCES_CONSULTED = [
     "www.google.com", // TODO: FILL ME IN
 ];
-
-
-
-/* ==========================================================================  **
-## 1. Five Item Rows (30 pts)
-
-In this problem, we'll work with rows of items that contain exactly five items.
-The benefit of having exactly five items is that we can use the type-system
-to help us enforce in-bounds accesses of the tuple. The drawback of having
-exactly five items is that we may have to modify it to hold any number of items.
-
-** ============================================================================ */
-
-export type fiveItemRow<T> = {
-    entries: [T, T, T, T, T]   // A five item row
-};
-
-type letter = 
-    "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" |
-    "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" |
-    "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" |
-    "Y" | "Z";
-
-const row1: fiveItemRow<letter> = {
+const row1 = {
     entries: ['J', 'O', 'K', 'E', 'R']
 };
-
-const row2: fiveItemRow<letter> = {
+const row2 = {
     entries: ['P', 'O', 'K', 'E', 'R']
 };
-
-const row3: fiveItemRow<letter> = {
+const row3 = {
     entries: ['M', 'U', 'S', 'K', 'Y']
 };
-
-const row4: fiveItemRow<letter> = {
+const row4 = {
     entries: ['F', 'U', 'S', 'S', 'Y']
 };
-
-const row5: fiveItemRow<letter> = {
+const row5 = {
     entries: ['H', 'O', 'U', 'S', 'E']
 };
-
-
 /* ----------------------------------------------------- **
 ### 1a. Complete the function definition below. (10 pts)
 
@@ -115,9 +85,8 @@ Example:
     filterFiveItemRow(row5, (arg) => arg === 'S' || arg === 'O') = [ 'O', 'S' ]
 
 ** ----------------------------------------------------- */
-
-export function filterFiveItemRow<T>(row: fiveItemRow<T>, cond: (arg: T) => boolean): T[] {
-    const tempArr = [] as T[];
+function filterFiveItemRow(row, cond) {
+    const tempArr = [];
     for (const e of row.entries) {
         if (cond(e)) {
             tempArr.push(e);
@@ -125,7 +94,7 @@ export function filterFiveItemRow<T>(row: fiveItemRow<T>, cond: (arg: T) => bool
     }
     return tempArr;
 }
-
+exports.filterFiveItemRow = filterFiveItemRow;
 console.log(filterFiveItemRow(row1, (arg) => arg === 'Z'));
 console.log(filterFiveItemRow(row2, (arg) => arg === 'K'));
 console.log(filterFiveItemRow(row3, (arg) => arg !== 'K'));
@@ -153,25 +122,24 @@ Example:
     dropFiveItemRow(row1, [1, 2, 3, 4]) = [ 'R' ]
 
 ** ----------------------------------------------------- */
-
-export function dropFiveItemRow<T>(row: fiveItemRow<T>, indices: number[]): T[] {
+function dropFiveItemRow(row, indices) {
     const tempArr = [...row.entries];
     for (let i = 0; i < indices.length; i++) {
-        if (i === 0 || indices[i] < indices[i-1]) {
+        if (i === 0 || indices[i] < indices[i - 1]) {
             tempArr.slice(indices[i], 1);
-        } else if (indices[i] > indices[i-1]) {
+        }
+        else if (indices[i] > indices[i - 1]) {
             tempArr.slice(indices[i]--, 1);
         }
     }
     return tempArr;
 }
-
+exports.dropFiveItemRow = dropFiveItemRow;
 console.log(dropFiveItemRow(row1, []));
 console.log(dropFiveItemRow(row1, [4]));
 console.log(dropFiveItemRow(row1, [3, 2]));
 console.log(dropFiveItemRow(row1, [1, 2]));
 console.log(dropFiveItemRow(row1, [1, 2, 3, 4]));
-
 /* ----------------------------------------------------- **
 ### 1c. Complete the function definition below. (10 pts)
 
@@ -179,13 +147,13 @@ console.log(dropFiveItemRow(row1, [1, 2, 3, 4]));
 produces a new row with the given function f.
 
 Example:
-    mapFiveItemRow(row1, (arg) => 0) = { 
-        entries: [ 0, 0, 0, 0, 0 ] 
+    mapFiveItemRow(row1, (arg) => 0) = {
+        entries: [ 0, 0, 0, 0, 0 ]
     }
 
 Example:
-    mapFiveItemRow(row1, (arg) => arg + "!") = { 
-        entries: [ 'J!', 'O!', 'K!', 'E!', 'R!' ] 
+    mapFiveItemRow(row1, (arg) => arg + "!") = {
+        entries: [ 'J!', 'O!', 'K!', 'E!', 'R!' ]
     }
 
 Example:
@@ -194,40 +162,11 @@ Example:
     }
 
 ** ----------------------------------------------------- */
-
-export function mapFiveItemRow<S, T>(row: fiveItemRow<S>, f: (arg: S) => T): fiveItemRow<T> {
+function mapFiveItemRow(row, f) {
     throw Error("TODO");
 }
-  
-
-/* ==========================================================================  **
-## 2. Basic Functions on Wordle Board (30 pts)
-
-We'll now use the fiveItemRow from before to create a Wordle board with 3 guesses
-and write basic functions that operate on this board.
-
-Wordle game: https://www.nytimes.com/games/wordle/index.html
-
-** ============================================================================ */
-
-// Sum type used to encode the state of each letter
-export type State =
-    "GUESS"    // The user's guess.
-  | "RED"      // Red means that the letter is nowhere in the word.
-  | "GRAY"     // Gray means that the letter exists in the word but is not in the right position.
-  | "GREEN";   // Green means that the letter is in the right position.
-
-
-export type Wordle3 = {
-    word: fiveItemRow<letter>,           // The word we are trying to guess
-    guesses: [
-        fiveItemRow<[State, letter]>,    // Guess 1
-        fiveItemRow<[State, letter]>,    // Guess 2
-        fiveItemRow<[State, letter]>     // Guess 3
-    ]
-};
-
-export const wordle1: Wordle3 = {
+exports.mapFiveItemRow = mapFiveItemRow;
+exports.wordle1 = {
     word: {
         entries: ['J', 'O', 'K', 'E', 'R']
     },
@@ -260,9 +199,8 @@ export const wordle1: Wordle3 = {
             ]
         }
     ]
-}
-
-export const wordle2: Wordle3 = {
+};
+exports.wordle2 = {
     word: {
         entries: ['J', 'O', 'K', 'E', 'R']
     },
@@ -295,8 +233,7 @@ export const wordle2: Wordle3 = {
             ]
         },
     ]
-}
-
+};
 /* ----------------------------------------------------- **
 ### 2a. Complete the function definition below. (15 pts)
 
@@ -340,24 +277,22 @@ Example:
     }
 
 ** ----------------------------------------------------- */
-
-export function wordle3GetGuess(wordle: Wordle3, guess: 1|2|3): fiveItemRow<[State, letter]> {
+function wordle3GetGuess(wordle, guess) {
     throw Error("TODO");
 }
-
-
+exports.wordle3GetGuess = wordle3GetGuess;
 /* ----------------------------------------------------- **
 ### 2b. Complete the function definition below. (15 pts)
 
 `wordle3SetGuess` is a **pure** function that takes a Wordle board,
 a guess position, and a fiveItemRow containing the guesses, and produces
-a Wordle board with an updated guess. The State of each letter in the 
+a Wordle board with an updated guess. The State of each letter in the
 updated guess position should be "GUESS". Leave all other guesses
 unchanged. If the guess position is out-of-bounds, return the Wordle
 board unchanged.
 
 Example:
-    wordle3SetGuess(wordle1, 1, {entries: ['M', 'U', 'S', 'E', 'S']}) = 
+    wordle3SetGuess(wordle1, 1, {entries: ['M', 'U', 'S', 'E', 'S']}) =
 
         {
         word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
@@ -393,7 +328,7 @@ Example:
         }
 
 Example:
-    wordle3SetGuess(wordle1, 1, {entries: ['S', 'A', 'P', 'P', 'Y']}) = 
+    wordle3SetGuess(wordle1, 1, {entries: ['S', 'A', 'P', 'P', 'Y']}) =
         {
         word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
         guesses: [
@@ -428,7 +363,7 @@ Example:
         }
 
 Example:
-    wordle3SetGuess(wordle1, 3, {entries: ['H', 'A', 'P', 'P', 'Y']}) = 
+    wordle3SetGuess(wordle1, 3, {entries: ['H', 'A', 'P', 'P', 'Y']}) =
         {
         word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
         guesses: [
@@ -462,19 +397,16 @@ Example:
         ]
         }
 ** ----------------------------------------------------- */
-
-export function wordle3SetGuess(wordle: Wordle3, guess: 1|2|3, row: fiveItemRow<letter>): Wordle3 {
+function wordle3SetGuess(wordle, guess, row) {
     throw Error("TODO");
 }
-
-
+exports.wordle3SetGuess = wordle3SetGuess;
 /* ==========================================================================  **
 ## 3. Advanced Functions on Wordle Board (40 pts)
 
 We'll now write advanced functions that operate on the Wordle board.
 
 ** ============================================================================ */
-
 /* ----------------------------------------------------- **
 ### 3a. Complete the function definition below. (15 pts)
 
@@ -492,12 +424,10 @@ Example:
     wordle3UsedLetters(wordle1, 3) = [ 'O', 'E' ]
 
 ** ----------------------------------------------------- */
-
-export function wordle3UsedLetters(wordle: Wordle3, guess: 1|2|3): letter[] {
+function wordle3UsedLetters(wordle, guess) {
     throw Error("TODO");
 }
-
-
+exports.wordle3UsedLetters = wordle3UsedLetters;
 /* ----------------------------------------------------- **
 ### 3b. Complete the function definition below. (25 pts)
 
@@ -519,7 +449,7 @@ Example:
   const wordle1_2 = wordle3Update(wordle1_1, 2);
   const wordle1_3 = wordle3Update(wordle1_2, 3);
   
-  wordle1_1 = 
+  wordle1_1 =
   {
     word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
     guesses: [
@@ -553,7 +483,7 @@ Example:
     ]
   }
 
-  wordle1_2 = 
+  wordle1_2 =
   {
     word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
     guesses: [
@@ -587,7 +517,7 @@ Example:
     ]
   }
 
-  wordle1_3 = 
+  wordle1_3 =
   {
     word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
     guesses: [
@@ -629,7 +559,7 @@ Example:
   const wordle2_2 = wordle3Update(wordle2_1, 2);
   const wordle2_3 = wordle3Update(wordle2_2, 3);
 
-  wordle2_1 = 
+  wordle2_1 =
   {
     word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
     guesses: [
@@ -663,7 +593,7 @@ Example:
     ]
   }
 
-  wordle2_2 = 
+  wordle2_2 =
   {
     word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
     guesses: [
@@ -697,7 +627,7 @@ Example:
     ]
   }
 
-  wordle2_3 = 
+  wordle2_3 =
   {
     word: { entries: [ 'J', 'O', 'K', 'E', 'R' ] },
     guesses: [
@@ -732,7 +662,7 @@ Example:
   }
 
 ** ----------------------------------------------------- */
-
-export function wordle3Update(wordle: Wordle3, guess: 1|2|3): Wordle3 {
+function wordle3Update(wordle, guess) {
     throw Error("TODO");
 }
+exports.wordle3Update = wordle3Update;
