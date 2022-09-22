@@ -126,11 +126,11 @@ export function filterFiveItemRow<T>(row: fiveItemRow<T>, cond: (arg: T) => bool
     return tempArr;
 }
 
-console.log(filterFiveItemRow(row1, (arg) => arg === 'Z'));
-console.log(filterFiveItemRow(row2, (arg) => arg === 'K'));
-console.log(filterFiveItemRow(row3, (arg) => arg !== 'K'));
-console.log(filterFiveItemRow(row4, (arg) => arg === 'S'));
-console.log(filterFiveItemRow(row5, (arg) => arg === 'S' || arg === 'O'));
+// console.log(filterFiveItemRow(row1, (arg) => arg === 'Z'));
+// console.log(filterFiveItemRow(row2, (arg) => arg === 'K'));
+// console.log(filterFiveItemRow(row3, (arg) => arg !== 'K'));
+// console.log(filterFiveItemRow(row4, (arg) => arg === 'S'));
+// console.log(filterFiveItemRow(row5, (arg) => arg === 'S' || arg === 'O'));
 
 /* ----------------------------------------------------- **
 ### 1b. Complete the function definition below. (10 pts)
@@ -151,7 +151,7 @@ Example:
     dropFiveItemRow(row1, [1, 2]) = [ 'J', 'E', 'R' ]
 
 Example:
-    dropFiveItemRow(row1, [1, 2, 3, 4]) = [ 'J' ]
+    dropFiveItemRow(row1, [1, 2, 3, 0]) = [ 'R' ]
 
 ** ----------------------------------------------------- */
 
@@ -165,11 +165,11 @@ export function dropFiveItemRow<T>(row: fiveItemRow<T>, indices: number[]): T[] 
     return tempArr;
 }
 
-console.log(dropFiveItemRow(row1, []));
-console.log(dropFiveItemRow(row1, [4]));
-console.log(dropFiveItemRow(row1, [3, 2]));
-console.log(dropFiveItemRow(row1, [1, 2]));
-console.log(dropFiveItemRow(row1, [1, 2, 3, 4]));
+// console.log(dropFiveItemRow(row1, []));
+// console.log(dropFiveItemRow(row1, [4]));
+// console.log(dropFiveItemRow(row1, [3, 2]));
+// console.log(dropFiveItemRow(row1, [1, 2]));
+// console.log(dropFiveItemRow(row1, [1, 2, 3, 0]));
 
 /* ----------------------------------------------------- **
 ### 1c. Complete the function definition below. (10 pts)
@@ -205,9 +205,9 @@ export function mapFiveItemRow<S, T>(row: fiveItemRow<S>, f: (arg: S) => T): fiv
     return retRow;
 }
 
-console.log(mapFiveItemRow(row1, (arg) => 0));
-console.log(mapFiveItemRow(row1, (arg) => arg + "!"));
-console.log(mapFiveItemRow(row1, (arg) => arg.length));
+// console.log(mapFiveItemRow(row1, (arg) => 0));
+// console.log(mapFiveItemRow(row1, (arg) => arg + "!"));
+// console.log(mapFiveItemRow(row1, (arg) => arg.length));
 
 /* ==========================================================================  **
 ## 2. Basic Functions on Wordle Board (30 pts)
@@ -359,9 +359,9 @@ export function wordle3GetGuess(wordle: Wordle3, guess: 1|2|3): fiveItemRow<[Sta
     }
 }
 
-console.log(wordle3GetGuess(wordle1, 1));
-console.log(wordle3GetGuess(wordle1, 2));
-console.log(wordle3GetGuess(wordle1, 3));
+// console.log(wordle3GetGuess(wordle1, 1));
+// console.log(wordle3GetGuess(wordle1, 2));
+// console.log(wordle3GetGuess(wordle1, 3));
 // console.log(wordle3GetGuess(wordle1, 4));
 
 /* ----------------------------------------------------- **
@@ -482,9 +482,29 @@ Example:
 ** ----------------------------------------------------- */
 
 export function wordle3SetGuess(wordle: Wordle3, guess: 1|2|3, row: fiveItemRow<letter>): Wordle3 {
-    throw Error("TODO");
+    const tempRow: fiveItemRow<[State, letter]> = mapFiveItemRow(row, (arg) => [ 'GUESS', arg ]);
+    const tempGuesses: [
+        fiveItemRow<[State, letter]>,
+        fiveItemRow<[State, letter]>,
+        fiveItemRow<[State, letter]>
+    ] = [] as unknown as [
+        fiveItemRow<[State, letter]>,
+        fiveItemRow<[State, letter]>,
+        fiveItemRow<[State, letter]>
+    ];
+    for (const x of wordle.guesses) {
+        tempGuesses.push(x);
+    }
+    tempGuesses[guess-1] = tempRow;
+    const tempWordle: Wordle3 = {
+        word: wordle.word,
+        guesses: tempGuesses
+    };
+    return tempWordle;
 }
 
+// console.log(wordle3SetGuess(wordle1, 1, {entries: ['M', 'U', 'S', 'E', 'S']}).guesses[0]);
+// console.log(wordle1.guesses[0]);
 
 /* ==========================================================================  **
 ## 3. Advanced Functions on Wordle Board (40 pts)
@@ -512,15 +532,27 @@ Example:
 ** ----------------------------------------------------- */
 
 export function wordle3UsedLetters(wordle: Wordle3, guess: 1|2|3): letter[] {
-    throw Error("TODO");
+    // throw Error("TODO");
+    const match: letter[] = [];
+    for (const x of wordle.word.entries) {
+        for (const y of wordle3GetGuess(wordle, guess).entries) {
+            if (x === y[1]) {
+                match.push(x);
+            }
+        }
+    }
+    return match;
 }
 
+console.log(wordle3UsedLetters(wordle1, 1));
+console.log(wordle3UsedLetters(wordle1, 2));
+console.log(wordle3UsedLetters(wordle1, 3));
 
 /* ----------------------------------------------------- **
 ### 3b. Complete the function definition below. (25 pts)
 
 `wordle3Update` is a **pure** function that updates the state of the
-Wordle board at the guess position to reflect the rules of Worlde:
+Wordle board at the guess position to reflect the rules of Wordle:
 1. If the letter is in the position at the correct place, set the
    `State` of that position to "GREEN".
 2. If the letter exists in the word but in the incorrect position, set the
@@ -752,5 +784,18 @@ Example:
 ** ----------------------------------------------------- */
 
 export function wordle3Update(wordle: Wordle3, guess: 1|2|3): Wordle3 {
-    throw Error("TODO");
+    const usedLetters: letter[] = wordle3UsedLetters(wordle, guess);
+    for (const x of usedLetters) {
+        mapFiveItemRow(wordle.guesses[guess-1], (arg) => (arg[1] === x) ? []);
+    }
+}
+
+function findIndexWord(row: fiveItemRow<letter>, l: letter): number[] {
+    let indexes: number[] = [];
+    for (let i = 0; i < row.entries.length; i++) {
+        if ( l === row.entries[i]) {
+            indexes.push(i);
+        }
+    }
+    return indexes;
 }
