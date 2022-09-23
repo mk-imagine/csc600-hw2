@@ -785,17 +785,54 @@ Example:
 
 export function wordle3Update(wordle: Wordle3, guess: 1|2|3): Wordle3 {
     const usedLetters: letter[] = wordle3UsedLetters(wordle, guess);
+    const newWordle: Wordle3 = {
+        word: wordle.word,
+        guesses: wordle.guesses
+    };
     for (const x of usedLetters) {
-        mapFiveItemRow(wordle.guesses[guess-1], (arg) => (arg[1] === x) ? []);
-    }
-}
+        for ( let i = 0; i < wordle.word.entries.length; i++) {
+            newWordle.guesses[guess-1].entries[i][0] 
+                = newState(x, wordle.word.entries[i], wordle3GetGuess(wordle, guess).entries[i][1]);
+            // const wordMatch: boolean = x === wordle.word.entries[i];
+            // const guessMatch: boolean = x === wordle3GetGuess(wordle, guess).entries[i][1];
 
-function findIndexWord(row: fiveItemRow<letter>, l: letter): number[] {
-    let indexes: number[] = [];
-    for (let i = 0; i < row.entries.length; i++) {
-        if ( l === row.entries[i]) {
-            indexes.push(i);
+            // if ( wordMatch && guessMatch ) {
+            //     newWordle.guesses[guess-1].entries[i][0] = 'GREEN';
+            // } else if ( wordMatch ) {
+            //     newWordle.guesses[guess-1].entries[i][0] = 'GRAY';
+            // } else {
+            //     newWordle.guesses[guess-1].entries[i][0] = 'RED';
+            // }
         }
     }
-    return indexes;
+    return newWordle;
+}
+
+function newState(u: letter, w: letter, g: letter): State {
+    const isWordMatch: boolean = u === w;
+    const isGuessMatch: boolean = u === g;
+    if ( isWordMatch && isGuessMatch ) {
+        return 'GREEN';
+    } 
+    if ( isGuessMatch ) {
+        return 'GRAY';
+    }
+    return 'RED';
+}
+
+const wordle1_1 = wordle3Update(wordle1, 1);
+const wordle1_2 = wordle3Update(wordle1_1, 2);
+const wordle1_3 = wordle3Update(wordle1_2, 3);
+
+console.log(wordle1_1.word);
+for (const x of wordle1_1.guesses) {
+    console.log(x.entries);
+}
+console.log(wordle1_2.word);
+for (const x of wordle1_2.guesses) {
+    console.log(x.entries);
+}
+console.log(wordle1_3.word);
+for (const x of wordle1_3.guesses) {
+    console.log(x.entries);
 }
