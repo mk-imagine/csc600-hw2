@@ -136,7 +136,7 @@ export function filterFiveItemRow<T>(row: fiveItemRow<T>, cond: (arg: T) => bool
 ### 1b. Complete the function definition below. (10 pts)
 
 `dropFiveItemRow` is a **pure** function that takes a row and
-eliminates those entries whose indicies are specified in indices.
+eliminates those entries whose indices are specified in indices.
 
 Example:
     dropFiveItemRow(row1, []) = [ 'J', 'O', 'K', 'E', 'R' ]
@@ -533,20 +533,21 @@ Example:
 
 export function wordle3UsedLetters(wordle: Wordle3, guess: 1|2|3): letter[] {
     // throw Error("TODO");
-    const match: letter[] = [];
+    const match: Set<letter> = new Set();
     for (const x of wordle.word.entries) {
         for (const y of wordle3GetGuess(wordle, guess).entries) {
             if (x === y[1]) {
-                match.push(x);
+                match.add(x);
             }
         }
     }
-    return match;
+    const matchArr = Array.from(match);
+    return matchArr;
 }
 
-console.log(wordle3UsedLetters(wordle1, 1));
-console.log(wordle3UsedLetters(wordle1, 2));
-console.log(wordle3UsedLetters(wordle1, 3));
+// console.log(wordle3UsedLetters(wordle1, 1));
+// console.log(wordle3UsedLetters(wordle1, 2));
+// console.log(wordle3UsedLetters(wordle1, 3));
 
 /* ----------------------------------------------------- **
 ### 3b. Complete the function definition below. (25 pts)
@@ -784,55 +785,116 @@ Example:
 ** ----------------------------------------------------- */
 
 export function wordle3Update(wordle: Wordle3, guess: 1|2|3): Wordle3 {
-    const usedLetters: letter[] = wordle3UsedLetters(wordle, guess);
-    const newWordle: Wordle3 = {
-        word: wordle.word,
-        guesses: wordle.guesses
-    };
-    for (const x of usedLetters) {
-        for ( let i = 0; i < wordle.word.entries.length; i++) {
-            newWordle.guesses[guess-1].entries[i][0] 
-                = newState(x, wordle.word.entries[i], wordle3GetGuess(wordle, guess).entries[i][1]);
-            // const wordMatch: boolean = x === wordle.word.entries[i];
-            // const guessMatch: boolean = x === wordle3GetGuess(wordle, guess).entries[i][1];
-
-            // if ( wordMatch && guessMatch ) {
-            //     newWordle.guesses[guess-1].entries[i][0] = 'GREEN';
-            // } else if ( wordMatch ) {
-            //     newWordle.guesses[guess-1].entries[i][0] = 'GRAY';
-            // } else {
-            //     newWordle.guesses[guess-1].entries[i][0] = 'RED';
-            // }
+    const newWordle: Wordle3 = copyWordle3(wordle);
+    const usedLetters: letter[] = wordle3UsedLetters(newWordle, guess);
+    const word: letter[] = [...newWordle.word.entries];
+    const guessed: [
+        [State, letter],
+        [State, letter],
+        [State, letter],
+        [State, letter],
+        [State, letter]] 
+        = [...newWordle.guesses[guess-1].entries];
+    if (usedLetters.length === 0) {
+        for ( let i = 0; i < word.length; i++) {
+            guessed[i]
+                = [ 'RED', guessed[i][1]];
         }
+    } else {
+        for (const x of usedLetters) {
+            for ( let i = 0; i < word.length; i++) {
+                guessed[i]
+                    = newState(x, word[i], guessed[i]);
+            }
+        }
+    }
+    
+    newWordle.guesses[guess-1].entries = guessed;
+    return newWordle;
+}
+
+function copyWordle3(wordle: Wordle3): Wordle3 {
+    const newWord: fiveItemRow<letter> = copyFiveItemRow(wordle.word);
+    const newGuesses: Guesses3 = copyGuesses(wordle.guesses);
+    const newWordle: Wordle3 = {
+        word: newWord,
+        guesses: newGuesses
     }
     return newWordle;
 }
 
-function newState(u: letter, w: letter, g: letter): State {
-    const isWordMatch: boolean = u === w;
-    const isGuessMatch: boolean = u === g;
-    if ( isWordMatch && isGuessMatch ) {
-        return 'GREEN';
-    } 
-    if ( isGuessMatch ) {
-        return 'GRAY';
+function copyFiveItemRow<T>(row: fiveItemRow<T>): fiveItemRow<T> {
+    const newEntries: [T, T, T, T, T] = [...row.entries] as unknown as [T, T, T, T, T];
+    const newRow: fiveItemRow<T> = {
+        entries: newEntries
     }
-    return 'RED';
+    return newRow;
 }
 
-const wordle1_1 = wordle3Update(wordle1, 1);
-const wordle1_2 = wordle3Update(wordle1_1, 2);
-const wordle1_3 = wordle3Update(wordle1_2, 3);
+type Guesses3 = [
+    fiveItemRow<[State, letter]>,
+    fiveItemRow<[State, letter]>,
+    fiveItemRow<[State, letter]> ];
 
-console.log(wordle1_1.word);
-for (const x of wordle1_1.guesses) {
-    console.log(x.entries);
+function copyGuesses(guesses: Guesses3): Guesses3 {
+    const newGuesses: Guesses3 = [
+            copyFiveItemRow(guesses[0]),
+            copyFiveItemRow(guesses[1]),
+            copyFiveItemRow(guesses[2]),
+        ]
+    return newGuesses;
 }
-console.log(wordle1_2.word);
-for (const x of wordle1_2.guesses) {
-    console.log(x.entries);
+
+function newState(u: letter, w: letter, g: [State, letter]): [State, letter] {
+    if ( w === g[1] ) {
+        return ['GREEN', g[1]];
+    } else if ( u === g[1] ) {
+        return ['GRAY', g[1]];
+    } else {
+        return ['RED', g[1]];
+    };
 }
-console.log(wordle1_3.word);
-for (const x of wordle1_3.guesses) {
-    console.log(x.entries);
-}
+
+// console.log(wordle1.word.entries);
+// const wordle1_1 = wordle3Update(wordle1, 1);
+// const wordle1_2 = wordle3Update(wordle1_1, 2);
+// const wordle1_3 = wordle3Update(wordle1_2, 3);
+
+// console.log("wordle1:");
+// for (const x of wordle1.guesses) {
+//     console.log(x.entries);
+// }
+// console.log("wordle1_1:");
+// for (const x of wordle1_1.guesses) {
+//     console.log(x.entries);
+// }
+// console.log("wordle1_2:");
+// for (const x of wordle1_2.guesses) {
+//     console.log(x.entries);
+// }
+// console.log("wordle1_3:");
+// for (const x of wordle1_3.guesses) {
+//     console.log(x.entries);
+// }
+
+// console.log(wordle2.word.entries);
+// const wordle2_1 = wordle3Update(wordle2, 1);
+// const wordle2_2 = wordle3Update(wordle2_1, 2);
+// const wordle2_3 = wordle3Update(wordle2_2, 3);
+
+// console.log("wordle2:");
+// for (const x of wordle2.guesses) {
+//     console.log(x.entries);
+// }
+// console.log("wordle2_1:");
+// for (const x of wordle2_1.guesses) {
+//     console.log(x.entries);
+// }
+// console.log("wordle2_2:");
+// for (const x of wordle2_2.guesses) {
+//     console.log(x.entries);
+// }
+// console.log("wordle2_3:");
+// for (const x of wordle2_3.guesses) {
+//     console.log(x.entries);
+// }
